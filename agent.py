@@ -10,4 +10,13 @@ from mcp_client import current_weather, forecast, list_airlines, list_airports, 
 from state import TravelState
 
 
+llm = get_llm()
 
+def _llm_text(system: str, prompt: str)->str:
+    response = llm.invoke(
+        [
+            SystemMessage(content = system),
+            HumanMessage(content = prompt)
+        ]
+    )
+    return response.content

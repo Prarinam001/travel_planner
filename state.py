@@ -1,4 +1,4 @@
-from typing import Annotated, List, TypedDict, Any
+from typing import Annotated, TypedDict, Any
 import operator
 from langchain_core.messages import AnyMessage
 
@@ -21,3 +21,6 @@ class TravelState(TypedDict, total=False):
     approval_request: str
     human_feedback: str
     approved: bool
+
+    final_response: str
+    llm_calls: int
