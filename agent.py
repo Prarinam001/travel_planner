@@ -46,5 +46,29 @@ def supervisor_agent(state: TravelState):
         - flight_agent: use when flights, airports, airlines, routes or airfare guidance are needed.
         - hotel_agent: use hotels, stays neighbourhoods, or accommodation are needed
         - weather_agent: use when weather, climate, seasons, packing, or forecast is useful
+        - budget_agent: use when budget, affordability, cost or price constraints are mentioned
+        - itinerary_agent: almost always needed to produce the travel plan
+
+        Return only JSON with this Schema:
+
+        {{
+        "selected_agents": ["flight_agent", "hotel_agent", "weather_agent", "budget_agent", "itinerary_agent"],
+        "trip_constraints": {{
+            "destination": "",
+            "origin": "",
+            "duration": "",
+            "budget": "",
+            "travel_style": "",
+            "special_preferences": []
+        }},
+        "reasoning": ""
+        }}
+
+        User request:
+        {query}
     """
+    raw = _llm_text(
+        "You route work to specialist agents. Return strict JSON only.",
+        prompt,
+    )
 
