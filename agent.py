@@ -20,3 +20,31 @@ def _llm_text(system: str, prompt: str)->str:
         ]
     )
     return response.content
+
+def _json_from_llm(text: str) -> dict:
+    print("\n=========== RAW LLM RESPONSE =============")
+    print(text)
+    print("============================================")
+
+    start = text.index("{")
+    end = text.rindex("}")+1
+    json_text = text[start:end]
+
+    print("\n========== EXTRACTED JSON ================")
+    print(json_text)
+    print("============================================")
+
+    return json.loads(json_text)
+
+def supervisor_agent(state: TravelState):
+    query = state["user_query"]
+    prompt = f"""
+        You are the supervisor of a real-world multi-agent travel planning system.
+        Decide which specilaist agents are needed for this user request.
+
+        Available Agents:
+        - flight_agent: use when flights, airports, airlines, routes or airfare guidance are needed.
+        - hotel_agent: use hotels, stays neighbourhoods, or accommodation are needed
+        - weather_agent: use when weather, climate, seasons, packing, or forecast is useful
+    """
+
