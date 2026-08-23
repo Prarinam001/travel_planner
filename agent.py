@@ -71,4 +71,77 @@ def supervisor_agent(state: TravelState):
         "You route work to specialist agents. Return strict JSON only.",
         prompt,
     )
+    print("\n===================== RAW LLM RESPONSE ====================")
+    print(raw)
+    print(type(raw))
+    print("============================================================\n")
 
+    parsed = _json_from_llm(raw)
+    print("\n===================== PARSED LLM RESPONSE ====================")
+    print(parsed)
+    print(type(parsed))
+    print("============================================================\n")
+
+    selected = parsed["selected_agents"]
+    return {
+        "selected_agents": selected,
+        "trip_constraints": parsed["trip_constraints"],
+        "supervisor_reasoning": parsed["reasoning"],
+        "messages":[AIMessage(content="Supevisor created the agent plan.")],
+        "llm_calls":state.get("llm_calls", 0)+1
+    }
+
+def flight_agents(state: TravelState):
+    query = state["user_query"]
+    constraints = state["trip_constraints"]
+    destination = constraints["destination"]
+
+    print("\n================ FLIGHT AGENT INPUT====================")
+    print("Query: ", query)
+    print("Constraints: ", constraints)
+    print("=========================================================")
+
+    airports = asyncio.run(list_airports(destination, limit=10))
+    airlines = asyncio.run(list_airlines("", limit=10))
+
+    print("\n=============== AIRPORT MCP DATA ====================")
+    print(airports)
+    print("======================================================\n")
+
+    print("\n================= AIRLINE MCP DATA ===================")
+    print(airlines)
+    print("=======================================================\n")
+
+    prompt = f"""
+        Create flight guidance for the trip.
+
+        User request:
+        {query}
+
+        Trip Constraints:
+        {constraints}
+
+        Airport MCP data:
+        {str(airports)[:3000]}
+
+        Airlines MCP data:
+        {str(airlines)[:3000]}
+
+        Include likely departure/arrival airports, relevant airlines,
+        estimated duration, fare range, peak season warning,
+        and booking advice.
+    """
+    result = _llm_text(
+        "You are a flight planning specialist.",
+        prompt,
+    )
+
+    print("\n========== FLIGHT AGENT OUTPUT ==========")
+    print(result)
+    print("=========================================\n")
+
+    return {
+        "flight_results": result,
+        "messages": [AIMessage(content="Flight agent completed.")],
+        "llm_calls": state.get("llm_calls", 0) + 1,
+    }
