@@ -21,6 +21,7 @@ def _llm_text(system: str, prompt: str)->str:
     )
     return response.content
 
+
 def _json_from_llm(text: str) -> dict:
     print("\n=========== RAW LLM RESPONSE =============")
     print(text)
@@ -35,6 +36,7 @@ def _json_from_llm(text: str) -> dict:
     print("============================================")
 
     return json.loads(json_text)
+
 
 def supervisor_agent(state: TravelState):
     query = state["user_query"]
@@ -90,6 +92,7 @@ def supervisor_agent(state: TravelState):
         "messages":[AIMessage(content="Supevisor created the agent plan.")],
         "llm_calls":state.get("llm_calls", 0)+1
     }
+
 
 def flight_agents(state: TravelState):
     query = state["user_query"]
@@ -164,3 +167,12 @@ def hotel_agent(state: TravelState):
         "hotel_results": str(result),
         "messages": [AIMessage(content="Hotel agent completed.")],
     }
+
+def weather_agent(state: TravelState):
+    constraints = state["trip_constraints"]
+    city = constraints["destinations"]
+
+    print("\n=============== WEATHER AGENT INPUT ====================")
+    print("city: ", city)
+    print("=======================================================\n")
+    
