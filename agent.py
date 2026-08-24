@@ -175,4 +175,30 @@ def weather_agent(state: TravelState):
     print("\n=============== WEATHER AGENT INPUT ====================")
     print("city: ", city)
     print("=======================================================\n")
-    
+    weather_data = asyncio.run(current_weather(city))
+    forecast_data = asyncio.run(forecast(city))
+
+    print("\n================== CURRENT WEATHER ==================")
+    print(weather_data)
+    print("=====================================================\n")
+
+    print("\n================ FORECAST DATA ====================")
+    print(forecast_data)
+    print("====================================================\n")
+
+    result = f"""
+        Current weather:
+        {weather_data}
+
+        Current forecast:
+        {forecast_data}
+    """
+    print("\n================== WEATHER AGENT OUTPUT ==================")
+    print(result)
+    print("==========================================================\n")
+
+    return {
+        "weather_results": result,
+        "messages": [AIMessage(content="weather agent completed")]
+    }
+
