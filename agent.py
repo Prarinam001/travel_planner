@@ -168,6 +168,7 @@ def hotel_agent(state: TravelState):
         "messages": [AIMessage(content="Hotel agent completed.")],
     }
 
+
 def weather_agent(state: TravelState):
     constraints = state["trip_constraints"]
     city = constraints["destinations"]
@@ -202,3 +203,34 @@ def weather_agent(state: TravelState):
         "messages": [AIMessage(content="weather agent completed")]
     }
 
+def budget_agent(state: TravelState):
+    print("\n=============== BUDGET INPUT =====================")
+    print("Trip Constraints")
+    print(state.get("trip_constraints"))
+    print("\nFlight Results")
+    print(state.get("flight_results"))
+    print("\nHotel Results")
+    print(state.get("hotel_results"))
+    print("\nWeather Results")
+    print(state.get("weather_results"))
+    print("====================================================\n")
+
+    prompt = f"""
+        Analyze weather this trip plan is realistic for the user's budget.
+
+        user request:
+        {state['user_query']}
+
+        Constraints:
+        {state.get("trip_constraints", {})}
+
+        Flight Results:
+        {state.get("flight_results", "")}
+
+        Hotel Results:
+        {state.get("hotel_results", "")}
+
+        Weather Results:
+        {state.get("weather_results", "")}
+
+        """
