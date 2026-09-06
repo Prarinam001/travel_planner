@@ -233,4 +233,108 @@ def budget_agent(state: TravelState):
         Weather Results:
         {state.get("weather_results", "")}
 
+        Return a concise budget assesment with:
+        1. estimate cost categories
+        2. risk areas
+        3. money saving tips
+        4. weather the plan seems feasible
         """
+
+    result = _llm_text(
+        "You are a budget planning specialist.",
+        prompt,
+    )
+
+    print("\n================== BUDGET AGENT OUTPUT ==================")
+    print(result)
+    print("==========================================================\n")
+
+    return {
+        "budget_results": result,
+        "messages": [AIMessage(content="Budget agent completed")],
+        "llm_calls": state.get("llm_calls", 0) + 1,
+    }
+
+def itinerary_agent(state: TravelState):
+    print("\n=============== ITINERARY INPUT =====================")
+    print("Trip Constraints")
+    print(state.get("trip_constraints"))
+    print("\nFlight Results")
+    print(state.get("flight_results"))
+    print("\nHotel Results")
+    print(state.get("hotel_results"))
+    print("\nWeather Results")
+    print(state.get("weather_results"))
+    print("\nBudget Results")
+    print(state.get("budget_results"))
+    print("====================================================\n")
+
+    prompt = f"""
+        Create a clear draft travel itinerary for the user.
+
+        user request:
+        {state['user_query']}
+
+        Constraints:
+        {state.get("trip_constraints", {})}
+
+        Flight Results:
+        {state.get("flight_results", "")}
+
+        Hotel Results:
+        {state.get("hotel_results", "")}
+
+        Weather Results:
+        {state.get("weather_results", "")}
+
+        Budget Results:
+        {state.get("budget_results", "")}
+
+        Make the output structured, practical, and ready for human review.
+        """
+
+    result = _llm_text(
+        "You are an expert travel itinerary planning specialist.",
+        prompt,
+    )
+
+    print("\n================== ITINERARY AGENT OUTPUT ==================")
+    print(result)
+    print("==========================================================\n")
+
+    approval_request = f"""
+        Please review this draft travel plan.
+
+        {result}
+
+        Reply with approval or feedback.
+        """
+
+    return {
+        "itinerary": result,
+        "approval_request": approval_request,
+        "messages": [AIMessage(content="Draft itinerary created for human review.")],
+        "llm_calls": state.get("llm_calls", 0) + 1,
+    }
+
+def human_approval_agent(state: TravelState):
+    feedback = interrupt(
+        {
+            "question": "Do you approve this itinerary?",
+            "draft_itinerary": state.get("itinerary", ""),
+            "approval_request": state.get("approval_request", ""),
+            "expected_response": {
+                "approved": True,
+                "feedback": "Optional feedback for revision",
+            }
+        }
+    )
+
+    approved = feedback.get("approved", False)
+    human_feedback = feedback.get("feedback", "")
+
+    return {
+        "approved": approved,
+        "human_feedback": human_feedback,
+        "messages": [HumanMessage(content="Human approval received.")]
+    }
