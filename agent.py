@@ -203,6 +203,7 @@ def weather_agent(state: TravelState):
         "messages": [AIMessage(content="weather agent completed")]
     }
 
+
 def budget_agent(state: TravelState):
     print("\n=============== BUDGET INPUT =====================")
     print("Trip Constraints")
@@ -254,6 +255,7 @@ def budget_agent(state: TravelState):
         "messages": [AIMessage(content="Budget agent completed")],
         "llm_calls": state.get("llm_calls", 0) + 1,
     }
+
 
 def itinerary_agent(state: TravelState):
     print("\n=============== ITINERARY INPUT =====================")
@@ -317,6 +319,7 @@ def itinerary_agent(state: TravelState):
         "llm_calls": state.get("llm_calls", 0) + 1,
     }
 
+
 def human_approval_agent(state: TravelState):
     feedback = interrupt(
         {
@@ -337,4 +340,56 @@ def human_approval_agent(state: TravelState):
         "approved": approved,
         "human_feedback": human_feedback,
         "messages": [HumanMessage(content="Human approval received.")]
+    }
+
+
+def final_response_agent(state: TravelState):
+    print("\n=============== FINAL RESPONSE INPUT =====================")
+    print("Approved: ", state.get("approved"))
+    print("Human Feedback: ", state.get("human_feedback"))
+    print("============================================================\n")
+
+    if state.get("approved"):
+        prompt = f"""
+            The human approved the draft itinerary.
+
+            Producr the final polished travel plan.
+
+            Draft Itinerary:
+            {state.get("itinerary", "")}
+
+            Budget Notes:
+            {state.get("budget_results", "")}
+        """
+    else:
+        prompt = f""""
+        The human didn't approved the draft itineary.
+
+        Original user request:
+        {state.get("user_query", "")}
+
+        Draft Itinerary:
+        {state.get("itinerary", "")}
+
+        Human Feedback:
+        {state.get("human_feedback", "")}
+
+        Budget Notes:
+        {state.get("budget_results", "")}
+
+        """
+
+    result = _llm_text(
+        "You produce final user-ready travel plans.",
+        prompt,
+    )
+
+    print("\n========== FINAL RESPONSE ==========")
+    print(result)
+    print("====================================\n")
+
+    return {
+        "final_response": result,
+        "messages": [AIMessage(content=result)],
+        "llm_calls": state.get("llm_calls", 0) + 1,
     }
