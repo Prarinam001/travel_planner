@@ -22,3 +22,15 @@ AGENT_ORDER = [
     "budget_agent",
     "itinerary_agent",
 ]
+
+ROUTE_MAP = {
+    "flight_agent": "flight_agent",
+    "hotel_agent": "hotel_agent",
+    "weather_agent": "weather_agent",
+    "budget_agent": "budget_agent",
+    "itinerary_agent": "itinerary_agent",
+}
+
+def selected_agents(state: TravelState)->list[str]:
+    selected_agents = state.get("selected_agents", [])
+    return [agent for agent in AGENT_ORDER if agent in selected_agents]
