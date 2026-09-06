@@ -94,7 +94,7 @@ def supervisor_agent(state: TravelState):
     }
 
 
-def flight_agents(state: TravelState):
+def flight_agent(state: TravelState):
     query = state["user_query"]
     constraints = state["trip_constraints"]
     destination = constraints["destination"]
