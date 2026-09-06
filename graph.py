@@ -31,6 +31,10 @@ ROUTE_MAP = {
     "itinerary_agent": "itinerary_agent",
 }
 
-def selected_agents(state: TravelState)->list[str]:
+def _selected_agents(state: TravelState)->list[str]:
     selected_agents = state.get("selected_agents", [])
     return [agent for agent in AGENT_ORDER if agent in selected_agents]
+
+def route_from_supervisor(state: TravelState)->str:
+    selected = _selected_agents(state)
+    return selected[0] if selected else "itinerary_agent"
