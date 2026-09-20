@@ -81,3 +81,4 @@ def build_graph() -> StateGraph:
 
     return graph.compile()
 
+app = build_graph()
